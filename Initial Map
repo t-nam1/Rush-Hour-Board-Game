@@ -1,1 +1,124 @@
 
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+const int BOARD_SIZE = 6;
+
+// Function to create the 6 by 6 array
+void make_map(string square[][BOARD_SIZE]) {
+    // Fill the array with white spaces
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            square[i][j] = "🟦";
+        }
+    }
+
+    // Set specific positions to red color
+    square[2][0] = "🟥"; // Red square emoji
+    square[2][1] = "🟥"; // Red square emoji
+}
+
+// Function to print the array with white color
+void print_map(const string square[][BOARD_SIZE]) {
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            cout << square[i][j];
+        }
+        cout << endl;
+    }
+}
+
+// Function to move the red car
+bool move_blocks(string square[][BOARD_SIZE], const char* color, const string& direction, int distance) {
+    // Find the current positions of the blocks with the specified color
+    vector<pair<int, int> > blockPositions;
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            if (square[i][j] == color) {
+                blockPositions.push_back(make_pair(i, j));
+            }
+        }
+    }
+
+    // Determine the minimum and maximum column indices of the blocks
+    int minCol = BOARD_SIZE - 1;
+    int maxCol = 0;
+    for (auto& position : blockPositions) {
+        int col = position.second;
+        minCol = min(minCol, col);
+        maxCol = max(maxCol, col);
+    }
+
+    // Move the blocks based on the direction and distance
+    if (direction == "r") {
+        if (maxCol + distance < BOARD_SIZE && square[blockPositions[0].first][maxCol + distance] == "🟦") {
+            for (auto& position : blockPositions) {
+                int row = position.first;
+                int col = position.second;
+                square[row][col] = "🟦";
+                square[row][col + distance] = color;
+            }
+        } else {
+            cout << "Invalid input." << endl;
+            return false;
+        }
+    } else if (direction == "l") {
+        if (minCol - distance >= 0 && square[blockPositions[0].first][minCol - distance] == "🟦") {
+            for (auto& position : blockPositions) {
+                int row = position.first;
+                int col = position.second;
+                square[row][col] = "🟦";
+                square[row][col - distance] = color;
+            }
+        } else {
+            cout << "Invalid input." << endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+int main() {
+    // Create a 6 by 6 array
+    string square[BOARD_SIZE][BOARD_SIZE];
+
+    // Populate the array
+    make_map(square);
+
+    // Print the initial map
+    print_map(square);
+
+    // Move the blocks based on user input
+    string color;
+    string direction;
+    int distance;
+
+    while (true) {
+        cout << "Enter move command (e.g., red r 1, or 'exit' to quit): ";
+        cin >> color;
+
+        if (color == "exit") {
+            break;
+        }
+
+        cin >> direction >> distance;
+
+        if (color == "red" && (direction == "r" || direction == "l") && distance >= 1) {
+            if (move_blocks(square, "🟥", direction, distance)) {
+                cout << endl;
+                // Print the updated map
+                print_map(square);
+            } else {
+                cout << "Invalid move command." << endl;
+            }
+        } else {
+            cout << "Invalid move command." << endl;
+        }
+    }
+
+    return 0;
+}
