@@ -49,6 +49,12 @@ bool move_blocks(string square[][BOARD_SIZE], const char* color, const string& d
         
         if (direction == "r") {
             if (col + distance < BOARD_SIZE && (square[row][col + distance] == "🟦" || square[row][col + distance] == color)) {
+                if (distance == 1) {
+                    square[row][col] = "🟦";
+                    square[row][col + distance] = color;
+                    square[row][col + distance + 1] = color;
+                    break;
+                }
                 square[row][col] = "🟦";
                 square[row][col + distance] = color;
                 
