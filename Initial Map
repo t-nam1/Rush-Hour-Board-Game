@@ -8,6 +8,10 @@ using namespace std;
 
 const int BOARD_SIZE = 6;
 
+// Function to clear the terminal screen
+void clearScreen() {
+    cout << "\033[2J\033[1;1H"; // ANSI escape sequence to clear screen & move cursor to top-left position
+}
 
 // Function to add a car to the square
 void addCar(string square[][BOARD_SIZE], int aboveRow, int aboveCol, int belowRow, int belowCol, int color_counter){
@@ -84,6 +88,8 @@ void flipBoard(string square[][BOARD_SIZE]) {
 
 // Function to print the array with white color
 void print_map(const string square[][BOARD_SIZE]) {
+    clearScreen();
+
     for (int i = 0; i < BOARD_SIZE; ++i) {
         for (int j = 0; j < BOARD_SIZE; ++j) {
             cout << square[i][j];
@@ -243,6 +249,8 @@ int main() {
         if (color == "red" && (direction == "r" || direction == "l") && distance >= 1) {
             if (move_blocks(square, "🟥", direction, distance)) {
                 cout << endl;
+                //clear the screen
+                clearScreen();
                 // Print the updated map
                 print_map(square);
             } else {
