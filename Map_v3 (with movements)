@@ -5,12 +5,12 @@
 #include <tuple>
 #include <cstdlib>
 #include <ctime>
-#include <cassert>
-#include <thread>
-#include <chrono>
+#include <cassert>  // Include this at the top of your file
+#include <chrono> // 스톱워치 기능을 위해 추가
+
 
 using namespace std;
-
+using namespace std::chrono;
 const int BOARD_SIZE = 6;
 
 // to be made into separate <headers> files
@@ -73,22 +73,6 @@ struct Car {
     string horizontal;
 };
 
-
-void timer(int duration, bool &time_up) {
-    for (int i = duration; i >= 0; --i) {
-        this_thread::sleep_for(chrono::seconds(1));
-        if (time_up) return;
-        cout << "\rTime left: " << i << " seconds" << string(10, ' ');
-        cout.flush();
-        if(i == 0) {
-            cout << "\nTime's up, game over!." << endl;
-            time_up = true;
-        }
-    }
-}
-
-
-
 void horizontal(string square[][BOARD_SIZE], Car vehicle[7]) {
     for (int i = 0; i < 7; ++i) {
         //if (vehicle[i].row1(square) == vehicle[i].row2(square)) {
@@ -122,8 +106,6 @@ int* storeCarPositions(int rowA, int colA, int rowB, int colB) {
 tuple<int, int, int, int> available_pos(string square[][BOARD_SIZE], int rowA, int colA, int rowB, int colB, bool isFlipped) {
     vector<std::tuple<int, int, int, int>> pairs;
 
-    
-
     for (int c = 0; c < BOARD_SIZE; ++c) {
         // Ensure that rowA - 1 is valid before accessing it
         if (rowA == 0) {
@@ -149,7 +131,6 @@ tuple<int, int, int, int> available_pos(string square[][BOARD_SIZE], int rowA, i
             }
         }
     }
-
 
     if (pairs.empty()) {
         if (isFlipped)  { flipBoard(square); }
@@ -366,183 +347,140 @@ bool move_blocks(string square[][BOARD_SIZE], const char* color, Car vehicle[8],
 }
 
 
-
 int main() {
-    do {
-        string modeSelection;
-        cout << "Select game mode ('Timed mode' OR 'Classic'):" << endl;
-        getline(cin, modeSelection);
-        bool time_up = false; // Check if timer is up 
-        
-        if (modeSelection == "Timed mode") {
-            // Timer starts if 'Timed mode' is selected 
-            thread timer_thread(timer, 60, ref(time_up)); // 60 second countdown
-            timer_thread.detach(); // Detach timer thread from main thread 
-        }
-        
+    bool playAgain = true;
+    while (playAgain) {
         srand(time(NULL));
         string square[BOARD_SIZE][BOARD_SIZE];
-        
         make_map(square);
         print_map(square);
-        
-        string color, direction;
+        string color;
+        string direction;
         int distance;
         Car vehicle[8] = {{"🟥"}, {"🔶"}, {"🟧"}, {"🟪"}, {"🟨"}, {"🟫"}, {"❎"}, {"🟩"}};
         horizontal(square, vehicle);
-        
-        while (!time_up) {
+        auto start = high_resolution_clock::now(); // 게임 시작 시간을 기록
+            
+        while (true) {
             string command;
-            cout << "\nEnter move command (e.g., red r 2, or 'exit' to quit):\n"; // 사용자 입력을 새로운 줄에서 받도록 수정
+            cout << "Enter move command (e.g., red r 2, or 'exit' to quit): ";
             getline(cin, command);
-            
-            if (command == "exit" || time_up) {
-                cout << "\nGame Over";
-                break;
-            }
-            
+        
             istringstream iss(command);
             iss >> color >> direction >> distance;
-            
-            
-            while (!time_up) {
-                string command;
-                cout << "\nEnter move command (e.g., red r 2, or 'exit' to quit): ";
-                getline(cin, command);
-                
-                if (command == "exit" || time_up) {
-                    cout << "\nGame Over";
-                    break;
-                }
-                
-                istringstream iss(command);
-                iss >> color >> direction >> distance;
-                
-                while (true) {
-                    
-                    string command;
-                    cout << "\nEnter move command (e.g., red r 2, or 'exit' to quit): ";
-                    getline(cin, command);
-                    
-                    istringstream iss(command);
-                    iss >> color >> direction >> distance;
-                    
-                    if (color == "exit") {
-                        cout << endl << "Exit rush hour";
-                        break;
-                    }
-                    
-                    
-                    if (color == "diamond" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        if (move_blocks(square, "🔶", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "orange" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "🟧", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "purple" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "🟪", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "yellow" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "🟨", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "brown" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "🟫", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "x" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "❎", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else if (color == "green" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
-                        
-                        if (move_blocks(square, "🟩", vehicle, direction, distance)) {
-                            cout << endl;
-                            // Print the updated map
-                            print_map(square);
-                        } else {
-                            cout << "Invalid move command." << endl;
-                        }
-                        
-                    } else {
-                        cout << "Invalid move command." << endl;
-                    }
-                    
-                    if (square[2][4] == "🟥" && square[2][5] == "🟥") {
-                        cout << endl << "YOU WIN!!";
-                        break;
-                    }
-                }
-                
-                if (square[2][4] == "🟥" && square[2][5] == "🟥") {
-                    cout << "\nYOU WIN!!";
-                    break;
-                }
-            }
-            
-            if (modeSelection == "Timed mode") {
-                time_up = true; // Times up!
-                // 
-            }
-            
-            
-            if (square[2][4] == "🟥" && square[2][5] == "🟥") {
-                cout << "\nYOU WIN!!";
+        
+            if (color == "exit") {
+                cout << endl << "Exit rush hour";
                 break;
             }
-        }
-        
-        if (modeSelection == "Timed mode") {
-            time_up = true;
-        }
-        
-        char playAgain;
-        cout << "\nPlay again (Y/N)? ";
-        cin >> playAgain;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 입력 버퍼 클리어
-        
-        if (playAgain != 'Y' && playAgain != 'y') {
-            break; // 
-        }
-    } while (true);
+            
+            if (color == "red" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                if (move_blocks(square, "🟥", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
     
-    return 0;
+            } else if (color == "diamond" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                if (move_blocks(square, "🔶", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "orange" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "🟧", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "purple" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "🟪", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "yellow" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "🟨", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "brown" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "🟫", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "x" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "❎", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else if (color == "green" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                
+                if (move_blocks(square, "🟩", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+                
+            } else {
+                cout << "Invalid move command." << endl;
+            }
+            
+            if (square[2][4] == "🟥" && square[2][5] == "🟥") {
+                auto end = high_resolution_clock::now(); // 게임 종료 시간을 기록
+                auto duration = duration_cast<seconds>(end - start);
+                cout << endl << "YOU WIN!!" << endl;
+                cout << "Time taken: " << duration.count() << " seconds." << endl; // 경과 시간 출력
+                break;
+            }
+            
+            } while (true) {
+            string answer;
+            cout << "Play Again? (Y/N): ";
+            getline(cin, answer);
+            
+            if (answer == "Y" || answer == "y") {
+                playAgain = true;
+                break; // Breaks the inner loop and continues with the outer loop
+            } else if (answer == "N" || answer == "n") {
+                playAgain = false;
+                cout << "Thanks for playing!" << endl;
+                break;
+            } else {
+                cout << "Invalid input, ";
+            }
+        }
+    }
+        return 0;
 }
