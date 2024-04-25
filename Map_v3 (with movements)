@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cassert>  // Include this at the top of your file
-#include <chrono> // 스톱워치 기능을 위해 추가
+#include <chrono> // For stopwatch
 
 
 using namespace std;
@@ -458,10 +458,10 @@ int main() {
             }
             
             if (square[2][4] == "🟥" && square[2][5] == "🟥") {
-                auto end = high_resolution_clock::now(); // 게임 종료 시간을 기록
+                auto end = high_resolution_clock::now(); // Record game ending time
                 auto duration = duration_cast<seconds>(end - start);
                 cout << endl << "YOU WIN!!" << endl;
-                cout << "Time taken: " << duration.count() << " seconds." << endl; // 경과 시간 출력
+                cout << "Time taken: " << duration.count() << " seconds." << endl; // Print game time
                 break;
             }
             
