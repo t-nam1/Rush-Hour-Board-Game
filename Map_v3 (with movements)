@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <cassert>  // Include this at the top of your file
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -70,6 +72,16 @@ struct Car {
     
     string horizontal;
 };
+void timer(int duration, bool &time_up) {
+    for (int i = duration; i >= 0; --i) {
+        cout << "\rTime left: " << i << " seconds";
+        if (i != 0) cout << string(10, ' '); 
+        cout.flush();
+        this_thread::sleep_for(chrono::seconds(1));
+        if (time_up) return; 
+    }
+    time_up = true; 
+}
 
 void horizontal(string square[][BOARD_SIZE], Car vehicle[7]) {
     for (int i = 0; i < 7; ++i) {
@@ -360,14 +372,29 @@ int main() {
     print_map(square);
 
     // Move the blocks based on user input
-    string color;
-    string direction;
+    string color, direction;
     int distance;
     
     // Get the position of each car
     Car vehicle[8] = {{"🟥"}, {"🔶"}, {"🟧"}, {"🟪"}, {"🟨"}, {"🟫"}, {"❎"}, {"🟩"}};
     //initialpos(square, vehicle);
     horizontal(square, vehicle);
+
+    bool time_up = false; // 타이머 종료 여부를 나타내는 플래그
+    thread timer_thread(timer, 60, ref(time_up)); // 타이머 스레드 시작, 60초 카운트다운
+
+    while (!time_up) {
+        string command;
+        cout << "\nEnter move command (e.g., red r 2, or 'exit' to quit): ";
+        getline(cin, command);
+
+        if (command == "exit" || time_up) {
+            cout << "\nGame Over";
+            break;
+        }
+
+        istringstream iss(command);
+        iss >> color >> direction >> distance;
 
     while (true) {
         
@@ -462,7 +489,15 @@ int main() {
             break;
         }
     }
-    
+
+        if (square[2][4] == "🟥" && square[2][5] == "🟥") {
+            cout << "\nYOU WIN!!";
+            break;
+        }
+    }
+
+    time_up = true; 
+    timer_thread.join(); 
+
     return 0;
-    
 }
