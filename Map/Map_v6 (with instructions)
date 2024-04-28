@@ -1,0 +1,672 @@
+#include <iostream>
+#include <string>
+#include <sstream> // to use isstringstream and iss
+#include <vector>
+#include <tuple>
+#include <cstdlib>
+#include <ctime>
+#include <cassert>  // Include this at the top of your file
+#include <chrono> // 스톱워치 기능을 위해 추가
+#include <cmath>
+#include <algorithm>
+#include <limits>
+#include <thread>
+
+
+using namespace std;
+using namespace std::chrono;
+const int LEVELS = 1;
+const int BOARD_SIZE = 6;
+
+// to be made into separate <headers> files
+void flipBoard(string square[][BOARD_SIZE]);
+void addCar(string square[][BOARD_SIZE], int aboveRow, int aboveCol, int belowRow, int belowCol, int color_counter);
+int* storeCarPositions(int rowA, int colA, int rowB, int colB);
+tuple<int, int, int, int> available_pos(string square[][BOARD_SIZE], int rowA, int colA, int rowB, int colB, bool isFlipped);
+void print_map(const string square[][BOARD_SIZE]);
+void make_map(string square[][BOARD_SIZE]);
+bool move_blocks(string square[][BOARD_SIZE], const char* color, const string& direction, int distance);
+
+struct Car {
+
+    string color;
+
+    int row1(string square[][BOARD_SIZE]) {
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                if (square[i][j] == color) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int col1(string square[][BOARD_SIZE]) {
+        for (int i = 0; i < BOARD_SIZE; ++i) {
+            for (int j = 0; j < BOARD_SIZE; ++j) {
+                if (square[i][j] == color) {
+                    return j;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int row2(string square[][BOARD_SIZE]) {
+        for (int i = 5; i >= 0; --i) {
+            for (int j = 5; j >= 0; --j) {
+                if (square[i][j] == color) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int col2(string square[][BOARD_SIZE]) {
+        for (int i = 5; i >= 0; --i) {
+            for (int j = 5; j >= 0; --j) {
+                if (square[i][j] == color) {
+                    return j;
+                }
+            }
+        }
+        return -1;
+    }
+
+    string horizontal;
+};
+
+// Clear screen
+void clear_screen() {
+    cout << "\033[H\033[2J";
+}
+
+
+
+void horizontal(string square[][BOARD_SIZE], Car vehicle[8]) {
+    for (int i = 0; i < 8; ++i) {
+        if (vehicle[i].row1(square) == vehicle[i].row2(square)) {
+            vehicle[i].horizontal = "h";
+        } else {
+            vehicle[i].horizontal = "v";
+        }
+    }
+}
+
+// Function to add a car to the square
+void addCar(string square[][BOARD_SIZE], int aboveRow, int aboveCol, int belowRow, int belowCol, int color_counter){
+    string colors[] = {"🔶", "🟪", "🟨", "🟫", "❎", "🟩"};
+    string vehicle = colors[color_counter];
+    square[aboveRow][aboveCol] = vehicle;
+    square[belowRow][belowCol] = vehicle;
+}
+
+// Function to store car positions in an array
+int* storeCarPositions(int rowA, int colA, int rowB, int colB) {
+    int* positions = new int[4];
+    positions[0] = rowA;
+    positions[1] = colA;
+    positions[2] = rowB;
+    positions[3] = colB;
+    return positions;
+}
+
+// Function to find available positions for a car
+tuple<int, int, int, int> available_pos(string square[][BOARD_SIZE], int rowA, int colA, int rowB, int colB, bool isFlipped) {
+    vector<std::tuple<int, int, int, int>> pairs;
+
+
+
+    for (int c = 0; c < BOARD_SIZE; ++c) {
+        // Ensure that rowA - 1 is valid before accessing it
+        if (rowA == 0) {
+        ; // do nothing
+        }
+        else {
+            assert(rowA > 0 && "rowA must be greater than 0 to check the row above");
+            if ((!isFlipped && square[rowA][c] == "🟦" && square[rowA - 1][c] == "🟦") ||
+                (isFlipped && c != colA && c != colB && c != 2 && square[rowA][c] == "🟦" && square[rowA - 1][c] == "🟦")) {
+                pairs.emplace_back(rowA, c, rowA - 1, c);
+            }
+        }
+
+        // Ensure that rowB + 1 is valid before accessing it
+        if (rowB >= BOARD_SIZE - 1) {
+            continue;
+        }
+        else {
+            assert(rowB < BOARD_SIZE - 1 && "rowB must be less than BOARD_SIZE - 1 to check the row below");
+            if ((!isFlipped && square[rowB][c] == "🟦" && square[rowB + 1][c] == "🟦") ||
+                (isFlipped && c != colA && c != colB && c != 2 && square[rowB][c] == "🟦" && square[rowB + 1][c] == "🟦")) {
+                pairs.emplace_back(rowB, c, rowB + 1, c);
+            }
+        }
+    }
+
+
+    if (pairs.empty()) {
+        if (isFlipped)  { flipBoard(square); }
+        return make_tuple(-1, -1, -1, -1); // No available positions found
+    }
+
+    // Randomly select a set of available positions
+    int randomIndex = rand() % pairs.size();
+    return pairs[randomIndex];
+}
+
+// Function to flip the board
+void flipBoard(string square[][BOARD_SIZE]) {
+    string temp[BOARD_SIZE][BOARD_SIZE];
+
+    // Copy the contents of the original square array to a temporary array
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            temp[i][j] = square[i][j];
+        }
+    }
+
+    // Flip the rows and columns in the temporary array
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            square[j][i] = temp[i][j];
+        }
+    }
+}
+
+double calculateScore(double d, int m) {
+    double x = (d / 40.0) * (m/5);
+    return 0.5 / sqrt(0.5 * pow(x, 3) + 0.25) * 1000;
+}
+
+// Function to print the array with white color
+void print_map(const string square[][BOARD_SIZE]) {
+    system("clear");
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            cout << square[i][j];
+        }
+        cout << endl;
+    }
+}
+
+// Struct to represent a player
+struct Player {
+    string name;
+    double totalScore;
+};
+
+// Comparator function to sort players by total score (descending order)
+bool comparePlayers(const Player& a, const Player& b) {
+    return a.totalScore > b.totalScore;
+}
+
+// Function to create the 6 by 6 array
+void make_map(string square[][BOARD_SIZE]) {
+    bool isFlipped = false;
+    int color_counter = 0;
+    // Fill the array with white spaces
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            square[i][j] = "🟦";
+        }
+    }
+
+    // Set specific positions to red color
+    square[2][0] = "🟥"; // Red square emoji
+    square[2][1] = "🟥"; // Red square emoji
+
+    // Ensure that at least 2 cars are blocking the red car
+    square[2][2] = "🟧";
+    square[3][2] = "🟧";
+    //square[4][2] = "🟧";
+
+    // Generate the first car
+    int* carPositions = storeCarPositions(2, 0, 2, 1);
+
+
+
+    // Generate subsequent cars
+    int NUM_CARS = 6;
+    for (int i = 0; i < NUM_CARS; ++i) {
+        // flipBoard(square); // Flip the board before generating the next car
+        int rowA = carPositions[0];
+        int colA = carPositions[1];
+        int rowB = carPositions[2];
+        int colB = carPositions[3];
+
+        auto positions = available_pos(square, rowA, colA, rowB, colB, isFlipped);
+        int aboveRow = std::get<0>(positions);
+        int aboveCol = std::get<1>(positions);
+        int belowRow = std::get<2>(positions);
+        int belowCol = std::get<3>(positions);
+
+        if (aboveRow == -1 && aboveCol == -1 && belowRow == -1 && belowCol == -1) {
+            break; // Exit the loop
+        }
+        addCar(square, aboveRow, aboveCol, belowRow, belowCol, color_counter);
+        delete[] carPositions; // Free the memory of the previous car positions
+
+        carPositions = storeCarPositions(aboveCol, aboveRow, belowCol, belowRow); //Must also flip coords
+        flipBoard(square);
+        isFlipped = !isFlipped;
+        ++color_counter;
+    }
+
+    delete[] carPositions;
+}
+
+bool move_blocks(string square[][BOARD_SIZE], const char* color, Car vehicle[8], const string direction, int distance) {
+
+    int index;
+    for (int a = 0; a < 8; ++a) {
+        if (vehicle[a].color == color) {
+            index = a;
+            break;
+        }
+    }
+    // cout << "index is : " << index << endl;
+
+    if (vehicle[index].horizontal == "h") {
+        if (direction == "r") {
+            if (vehicle[index].col1(square) + distance < BOARD_SIZE && (square[vehicle[index].row1(square)][vehicle[index].col1(square) + distance] == "🟦" || square[vehicle[index].row1(square)][vehicle[index].col1(square) + distance] == vehicle[index].color) && vehicle[index].col2(square) + distance < BOARD_SIZE && (square[vehicle[index].row2(square)][vehicle[index].col2(square) + distance] == "🟦" || square[vehicle[index].row2(square)][vehicle[index].col2(square) + distance] == vehicle[index].color)) {
+
+                // To prevent the cars from jumping over other cars
+                if (distance == 3 || distance == 4) {
+                    if (square[vehicle[index].row2(square)][vehicle[index].col2(square) + 1] != "🟦" || square[vehicle[index].row2(square)][vehicle[index].col2(square) + 2] != "🟦") {
+
+                        return false;
+                    }
+                }
+
+                int temp_row1 = vehicle[index].row1(square);
+                int temp_col1 = vehicle[index].col1(square) + distance;
+                int temp_row2 = vehicle[index].row2(square);
+                int temp_col2 = vehicle[index].col2(square) + distance;
+
+                square[vehicle[index].row1(square)][vehicle[index].col1(square)] = "🟦";
+                square[vehicle[index].row2(square)][vehicle[index].col2(square)] = "🟦";
+                square[temp_row1][temp_col1] = vehicle[index].color;
+                square[temp_row2][temp_col2] = vehicle[index].color;
+
+                cout << endl << "right";
+                return true;
+            }
+        } else if (direction == "l") {
+            if (vehicle[index].col1(square) - distance >= 0 && (square[vehicle[index].row1(square)][vehicle[index].col1(square) - distance] == "🟦" || square[vehicle[index].row1(square)][vehicle[index].col1(square) - distance] == vehicle[index].color) && vehicle[index].col2(square) - distance >= 0 && (square[vehicle[index].row2(square)][vehicle[index].col2(square) - distance] == "🟦" || square[vehicle[index].row2(square)][vehicle[index].col2(square) - distance] == vehicle[index].color)) {
+
+                // To prevent the cars from jumping over other cars
+                if (distance == 3 || distance == 4) {
+                    if (square[vehicle[index].row1(square)][vehicle[index].col1(square) - 1] != "🟦" || square[vehicle[index].row1(square)][vehicle[index].col1(square) - 2] != "🟦") {
+
+                        return false;
+                    }
+                }
+
+                int temp_row1 = vehicle[index].row1(square);
+                int temp_col1 = vehicle[index].col1(square) - distance;
+                int temp_row2 = vehicle[index].row2(square);
+                int temp_col2 = vehicle[index].col2(square) - distance;
+
+                square[vehicle[index].row1(square)][vehicle[index].col1(square)] = "🟦";
+                square[vehicle[index].row2(square)][vehicle[index].col2(square)] = "🟦";
+                square[temp_row1][temp_col1] = vehicle[index].color;
+                square[temp_row2][temp_col2] = vehicle[index].color;
+
+                cout << endl << "left";
+                return true;
+            }
+        } else {
+            return false;
+        }
+
+    } else if (vehicle[index].horizontal == "v") {
+        if (direction == "d") {
+            if (vehicle[index].row1(square) + distance < BOARD_SIZE && (square[vehicle[index].row1(square) + distance][vehicle[index].col1(square)] == "🟦" || square[vehicle[index].row1(square) + distance][vehicle[index].col1(square)] == vehicle[index].color) && vehicle[index].row2(square) + distance < BOARD_SIZE && (square[vehicle[index].row2(square) + distance][vehicle[index].col2(square)] == "🟦" || square[vehicle[index].row2(square) + distance][vehicle[index].col2(square)] == vehicle[index].color)) {
+
+                // To prevent the cars from jumping over other cars
+                if (distance == 3 || distance == 4) {
+                    if (square[vehicle[index].row2(square) + 1][vehicle[index].col2(square)] != "🟦" || square[vehicle[index].row2(square) + 2][vehicle[index].col2(square)] != "🟦") {
+
+                        return false;
+                    }
+                }
+
+                int temp_row1 = vehicle[index].row1(square) + distance;
+                int temp_col1 = vehicle[index].col1(square);
+                int temp_row2 = vehicle[index].row2(square) + distance;
+                int temp_col2 = vehicle[index].col2(square);
+
+                square[vehicle[index].row1(square)][vehicle[index].col1(square)] = "🟦";
+                square[vehicle[index].row2(square)][vehicle[index].col2(square)] = "🟦";
+                square[temp_row1][temp_col1] = vehicle[index].color;
+                square[temp_row2][temp_col2] = vehicle[index].color;
+
+                cout << endl << "down";
+                return true;
+            }
+        } else if (direction == "u") {
+            if (vehicle[index].row1(square) - distance >= 0 && (square[vehicle[index].row1(square) - distance][vehicle[index].col1(square)] == "🟦" || square[vehicle[index].row1(square) - distance][vehicle[index].col1(square)] == vehicle[index].color) && vehicle[index].row2(square) - distance >= 0 && (square[vehicle[index].row2(square) - distance][vehicle[index].col2(square)] == "🟦" || square[vehicle[index].row2(square) - distance][vehicle[index].col2(square)] == vehicle[index].color)) {
+
+                // To prevent the cars from jumping over other cars
+                if (distance == 3 || distance == 4) {
+                    if (square[vehicle[index].row1(square) - 1][vehicle[index].col1(square)] != "🟦" || square[vehicle[index].row1(square) - 2][vehicle[index].col1(square)] != "🟦") {
+
+                        return false;
+                    }
+                }
+
+                int temp_row1 = vehicle[index].row1(square) - distance;
+                int temp_col1 = vehicle[index].col1(square);
+                int temp_row2 = vehicle[index].row2(square) - distance;
+                int temp_col2 = vehicle[index].col2(square);
+
+                square[vehicle[index].row1(square)][vehicle[index].col1(square)] = "🟦";
+                square[vehicle[index].row2(square)][vehicle[index].col2(square)] = "🟦";
+                square[temp_row1][temp_col1] = vehicle[index].color;
+                square[temp_row2][temp_col2] = vehicle[index].color;
+
+                cout << endl << "up";
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+    return false;
+}
+
+
+int main() {
+    bool playAgain = true;
+    int totalScore = 0;
+    vector<Player> leaderboard;
+    clear_screen();
+
+    // Display title
+    string gameOverText = R"(
+
+██╗  ██╗██╗   ██╗███╗   ██╗ ██████╗ ██████╗ ██╗   ██╗    ██╗  ██╗ ██████╗ ██╗   ██╗██████╗
+██║  ██║██║   ██║████╗  ██║██╔════╝ ██╔══██╗╚██╗ ██╔╝    ██║  ██║██╔═══██╗██║   ██║██╔══██╗
+███████║██║   ██║██╔██╗ ██║██║  ███╗██████╔╝ ╚████╔╝     ███████║██║   ██║██║   ██║██████╔╝
+██╔══██║██║   ██║██║╚██╗██║██║   ██║██╔══██╗  ╚██╔╝      ██╔══██║██║   ██║██║   ██║██╔══██╗
+██║  ██║╚██████╔╝██║ ╚████║╚██████╔╝██║  ██║   ██║       ██║  ██║╚██████╔╝╚██████╔╝██║  ██║
+╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝
+
+    )";
+
+    for (char c : gameOverText) {
+        cout << c;
+        cout.flush();
+        this_thread::sleep_for(chrono::milliseconds(2));
+    }
+
+    this_thread::sleep_for(chrono::milliseconds(1000));
+
+    string gameDescription = R"(
+
+Join James, a university student on a thrilling quest through the bustling city streets, as he tackles a series of unpredictable
+challenges. Help him navigate through packed parking lots, chaotic campuses, and more — all in a race against time to satisfy his
+growling stomach!
+
+GAME OBJECTIVE
+Guide the red car 🟥 all the way to the right of the board. Simply clear the path and input your moves like so: r r 4.
+
+HOW TO PLAY
+Move the cars based on their orientation:
+- Horizontally placed cars move left (l) or right (r).
+
+CAR SIGNIFIERS
+- 🟥 (r) Red
+- 🔶 (d) Orange
+- 🟧 (o) Dark Orange
+- 🟪 (p) Purple
+- 🟨 (y) Yellow
+- 🟫 (b) Brown
+- ❎ (x) Green X
+- 🟩 (g) Green
+
+COMMANDS
+Input your moves in the format: Color Direction Steps
+Example: r r 2 moves the red car right by 2 steps.
+
+EXITING THE GAME
+Press q to quit anytime.
+
+SCORING
+Earn 1000 points for each game you complete!
+
+
+Get ready to drive, strategize, and enjoy an adventure filled with laughter, excitement, and delicious discoveries.
+
+Let the urban odyssey begin!
+
+)";
+
+    for (char c : gameDescription) {
+        cout << c;
+        cout.flush();
+        this_thread::sleep_for(chrono::milliseconds(10));
+    }
+
+    cout << "\n--- Press enter to continue --- \n";
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    while (playAgain) {
+        // string name;
+        for (int level = 1; level <= LEVELS; ++level) {
+        srand(time(NULL));
+        string square[BOARD_SIZE][BOARD_SIZE];
+        make_map(square);
+        clear_screen();
+        print_map(square);
+        string color;
+        string direction;
+        int distance;
+        Car vehicle[8] = {{"🟥"}, {"🔶"}, {"🟧"}, {"🟪"}, {"🟨"}, {"🟫"}, {"❎"}, {"🟩"}};
+        horizontal(square, vehicle);
+        auto start = high_resolution_clock::now(); // 게임 시작 시간을 기록
+        int moves = 0;
+        while (true) {
+            string command;
+            cout << "Enter move command (e.g., r r 2, (indicating 'red right 2 boxes') or 'exit' to quit): ";
+            getline(cin, command);
+
+            istringstream iss(command);
+            iss >> color >> direction >> distance;
+
+            if (color == "exit") {
+                cout << endl << "Exit rush hour";
+                break;
+            }
+
+            if (color == "r" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                if (move_blocks(square, "🟥", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+
+            } else if (color == "d" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+                if (move_blocks(square, "🔶", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "o" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "🟧", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "p" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "🟪", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "y" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "🟨", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "b" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "🟫", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "x" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "❎", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command." << endl;
+                }
+
+            } else if (color == "g" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+
+                if (move_blocks(square, "🟩", vehicle, direction, distance)) {
+                    cout << endl;
+                    // Print the updated map
+                    clear_screen();
+                    print_map(square);
+                } else {
+                    cout << "Invalid move command. Problem" << endl;
+                }
+
+            } else {
+                cout << "Invalid move command." << endl;
+            }
+            moves++;
+
+            if (square[2][4] == "🟥" && square[2][5] == "🟥") {
+                auto end = high_resolution_clock::now(); // 게임 종료 시간을 기록
+                auto duration = duration_cast<seconds>(end - start);
+                cout << endl << "YOU WIN!!\n" << endl;
+                cout << "Time taken: " << duration.count() << " seconds." << endl; // 경과 시간 출력
+                cout << "level: " << level << endl;
+            double duration_count = duration.count();
+            double score = calculateScore(duration_count, moves);
+    cout << "Score: " << round(score) << endl;
+            totalScore += score;
+            char placeholder;
+            cout << "\n--- Press enter to continue --- \n";
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+// Existing code
+if (level == LEVELS) {
+    string playerName;
+    cout << "Enter your name: ";
+    getline(cin, playerName);
+
+    // Check if player already exists in the leaderboard
+    bool found = false;
+    for (auto& player : leaderboard) {
+        if (player.name == playerName) {
+            found = true;
+            // Update the score if the current score is higher
+            if (player.totalScore < totalScore) {
+                player.totalScore = totalScore;
+            }
+            break;
+        }
+    }
+
+    // If player does not exist, add them to the leaderboard
+    if (!found) {
+        Player currentPlayer;
+        currentPlayer.name = playerName;
+        currentPlayer.totalScore = totalScore;
+        leaderboard.push_back(currentPlayer);
+    }
+
+    string answer;
+    cout << "Play Again? (Y/N): ";
+    getline(cin, answer);
+
+    if (answer == "Y" || answer == "y") {
+        playAgain = true;
+        totalScore = 0; // Reset total score for new game
+        break; // Breaks the inner loop and continues with the outer loop
+    } else if (answer == "N" || answer == "n") {
+        playAgain = false;
+        cout << "Thanks for playing!" << endl;
+
+        // Display leaderboard
+        cout << "Leaderboard:" << endl;
+        // Sort leaderboard by total score
+        sort(leaderboard.begin(), leaderboard.end(), [](const Player& a, const Player& b) {
+            return a.totalScore > b.totalScore; // Sort descending
+        });
+        for (const auto& player : leaderboard) {
+            cout << player.name << ": " << player.totalScore << endl;
+        }
+
+        // Display game over
+        string gameOverText = R"(
+                             _______  _______  _______  _______    _______           _______  _______
+                            (  ____ \(  ___  )(       )(  ____ \  (  ___  )|\     /|(  ____ \(  ____ )
+                            | (    \/| (   ) || () () || (    \/  | (   ) || )   ( || (    \/| (    )|
+                            | |      | (___) || || || || (__      | |   | || |   | || (__    | (____)|
+                            | | ____ |  ___  || |(_)| ||  __)     | |   | |( (   ) )|  __)   |     __)
+                            | | \_  )| (   ) || |   | || (        | |   | | \ \_/ / | (      | (\ (
+                            | (___) || )   ( || )   ( || (____/\  | (___) |  \   /  | (____/\| ) \ \__
+                            (_______)|/     \||/     \|(_______/  (_______)   \_/   (_______/|/   \__/
+                            )";
+
+        for (char c : gameOverText) {
+            cout << c;
+            cout.flush();
+            this_thread::sleep_for(chrono::milliseconds(20));
+        }
+        break;
+
+    } else {
+        cout << "Invalid input: ";
+    }
+}
+
+            else
+                break;
+            }
+        }
+            // cout << "Enter name: ";
+            // cin >> name;
+        }
+    }
+   return 0;
+}
