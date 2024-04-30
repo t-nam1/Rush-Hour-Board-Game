@@ -39,10 +39,11 @@
 
 ### Compilation and execution instructions 
 
-
+[text] 
 
 -----
-**About the game: **
+
+** About the game: **
 
 ## RUSH HOUR ADVENTURE
 
