@@ -26,12 +26,13 @@ Earn more points by winning each round quicker! Points depend on how quick you s
 
 ### List of features implemented 
 
-* Generation of random game sets or events
-* Data structures for storing game status (e.g., arrays, STL containers)
+* Generation of random game sets or events - each game randomly generates each map, with each round getting more difficult for players
+* Data structures for storing game status (e.g., arrays, STL containers) - inserts user name to store in leaderboard
 * Dynamic memory management (e.g., dynamic arrays, linked lists, STL containers)
-* File input/output (e.g., for loading/saving game status)
+* File input/output (e.g., for loading/saving game status) - inserts user name to store in leaderboard
 * Program codes in multiple files (recall separate compilation)
-* Proper indentation and naming styles o In-code documentation
+* Proper indentation and naming styles
+* In-code documentation
 
 ### List of non-standard C/C++ libraries
 * string - for string manipulation
