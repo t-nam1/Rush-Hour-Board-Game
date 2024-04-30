@@ -44,16 +44,15 @@ int main() {
 
     string gameDescription = R"(
 
-Join James, a university student on a thrilling quest through the bustling city streets, as he tackles a series of unpredictable 
-challenges. Help him navigate through packed parking lots, chaotic campuses, and more — all in a race against time to satisfy his 
-growling stomach!
+Join James, a university student on a thrilling quest through the bustling city streets, as he tackles a series of unpredictable challenges. Help him navigate through packed parking lots, chaotic campuses, and more — all in a race against time to satisfy his growling stomach!
 
 GAME OBJECTIVE
-Guide the smiley face (James) 😀 all the way to the right of the board. Simply clear the path and input your moves like so: j r 4.
+Guide the smiley face (James) 😀 all the way to the right of the board. Simply clear the path to the right-most side and input your moves like so: j r 4.
 
 HOW TO PLAY
 Move the cars based on their orientation:
 - Horizontally placed cars move left (l) or right (r).
+- Vertically placed cars move up (u) or down (d). 
 
 CAR SIGNIFIERS
 - 😀 (j) James 
@@ -67,15 +66,18 @@ CAR SIGNIFIERS
 
 COMMANDS
 Input your moves in the format: Color Direction Steps
+    
 Example: 
-o r 2 moves the orange car right by 2 steps.
-j r 4 moves James to victory!
+o l 2 : orange car, to the left, by 2 blocks. 
+j r 4 : James (smiley), to the right, by 4 blocks. 
+y u 3 : yello car, upwards, by 3 blocks.
+b d 1 : brown car, downwards, by 1 block. 
 
 EXITING THE GAME    
-Press q to quit anytime.
+Press 'q' to quit anytime.
 
 SCORING
-Earn 1000 points for each game you complete!
+Earn more points by finishing the game quickly, max 1000 points for each round!
 
 Get ready to drive, strategize, and enjoy an adventure filled with laughter, excitement, and delicious discoveries. 
 
@@ -261,7 +263,7 @@ Let the urban odyssey begin!
     string answer;
     
     while (true) {
-    cout << "Options: \n1. Play Again\n2. Show Leaderboards\n3. Quit\nEnter option (number only): \n";
+    cout << "Options: \n1. Play Again\n2. Show Leaderboards\n3. Quit\nEnter option (number only): ";
     cin >> answer;
         if (answer == "1") {
             cout << "\nGame will restart with a reset score.\n";
