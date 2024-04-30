@@ -1,8 +1,7 @@
 ## COMP2113_ENGG1340 Programming technologies and Computer programming II
 
 ### Team Details: 
-**Team Name**: 
-**Team Number** (on Moodle): 
+**Team Number** (on Moodle): 21
 
 **Members**:
 * Jose Joaquin Marquez (3036263622)
