@@ -34,13 +34,13 @@ The Hunger Hour Game is a sliding block puzzle where the objective is to move a 
 The aim of the game is to find a sequence of moves to move the target vehicle (emoji car) to the exit.
 
 **Assumptions**:
-1.⁠ ⁠The Hunger Hour Board Game is played on a 6x6 grid.
-2.⁠ ⁠The game board is represented as a 2D matrix.
-3.⁠ ⁠Each vehicle is represented by a non-blue coloured block and occupies 2 cells.
-4.⁠ ⁠The two smiley emoji is the vehicle to be moved to the exit (the right-most side).
-5.⁠ ⁠The target vehicle (emoji car) can only move horizontally.
-6.⁠ ⁠The other vehicles on the board can only be moved by sliding them horizontally or vertically, depending on their layout. 
-7. The cars cannot move out of the grid. 
+* ⁠The Hunger Hour Board Game is played on a 6x6 grid.
+* The game board is represented as a 2D matrix.
+* ⁠Each vehicle is represented by a non-blue coloured block and occupies 2 cells.
+* ⁠The two smiley emoji is the vehicle to be moved to the exit (the right-most side).
+* ⁠The target vehicle (emoji car) can only move horizontally.
+* ⁠The other vehicles on the board can only be moved by sliding them horizontally or vertically, depending on their layout.
+* The cars cannot move out of the grid. 
 
 
 ### List of features implemented 
