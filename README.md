@@ -24,18 +24,18 @@
 * Proper indentation and naming styles o In-code documentation
 
 ### List of non-standard C/C++ libraries
-* <string> - for string manipulation
-* <sstream> - for stream operations
-* <vector> - for dynamic arrays
-* <tuple> - for the tuple class
-* <cstdlib> - dynamic memory management and random number generation
-* <ctime> - for time calculation
-* <cassert> - diagnostic testing
-* <chrono>  - stopwatch feature
-* <cmath> - for time calculations
-* <algorithm> - for sorting and searching
-* <limits> - query properties of fundamental data types
-* <thread> - for the thread class
+* string - for string manipulation
+* sstream - for stream operations
+* vector - for dynamic arrays
+* tuple - for the tuple class
+* cstdlib - dynamic memory management and random number generation
+* ctime - for time calculation
+* cassert - diagnostic testing
+* chrono - stopwatch feature
+* cmath - for time calculations
+* algorithm - for sorting and searching
+* limits - query properties of fundamental data types
+* thread - for the thread class
 
 ### Compilation and execution instructions 
 
