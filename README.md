@@ -12,7 +12,17 @@
 
 ### Game Description and Rules: 
 
-*Hungry Hour* is a strategic puzzle game based on the traditional mechanics of the Rush Hour board game, but with a delightful twist. In this game, players must help the smiley face 😀, known as James, navigate through a gridlocked board to reach the far right exit. The board is cluttered with various cars, each represented by colorful blocks that can only move horizontally/vertically in line with their orientation. Your task is to devise a path for James by moving these cars left-right or up-down, using simple commands like 'j r 4' to slide James four spaces to the right. Cars come in multiple colors including Red 🟥, Orange 🟧, Purple 🟪, and others, each designated by a unique letter for easy command input. Earn more points by winning each round quicker! Remember, you can exit the game at any moment by pressing 'q'. Plan your moves carefully and lead James to victory in this engaging puzzle challenge!
+*Hungry Hour* is a strategic puzzle game based on the traditional mechanics of the Rush Hour board game, but with a delightful twist. In this game, players must help the smiley face 😀, known as James, navigate through a gridlocked board to reach the far right exit. The board is cluttered with various cars, each represented by colorful blocks that can only move horizontally/vertically in line with their orientation. 
+
+Your task is to devise a path for James by using simple commands to move coloured cars left-right or up-down, and move James to its destination - the far right exit. Cars come in multiple colors including Red 🟥, Orange 🟧, Purple 🟪, and others, each designated by a unique letter for easy command input. You cannot go through cars if they are in the way. Remember, James can only move horizontally. 
+
+Examples of commands: 
+* 'j r 4': move **James**, **4** blocks to the **right**.
+* 'o u 2': move **Orange car**, **2** blocks **up**.
+* 'r d 1': move **Red car**, **1** blocks **down**.
+* 'w l 3': move **White car**, **3** blocks **left**.
+
+Earn more points by winning each round quicker! Remember, you can exit the game at any moment by pressing 'q'. Plan your moves carefully and lead James to victory in this engaging puzzle challenge!
 
 ### List of features implemented 
 
