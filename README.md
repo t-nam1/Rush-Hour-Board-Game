@@ -24,6 +24,25 @@ Examples of commands:
 
 Earn more points by winning each round quicker! Points depend on how quick you solve the round and how many moves you use, the max being 1000 points. You can exit the game at any moment by pressing 'q'. Plan your moves carefully and lead James to victory in this engaging puzzle challenge!
 
+### Problem statement
+
+**Hunger Hour Game Solver**
+
+**Description**:
+The Hunger Hour Game is a sliding block puzzle where the objective is to move a specific vehicle to the exit by sliding other vehicles out of the way. The game is played on a 6x6 grid, and each vehicle occupies a certain number of cells in either horizontal or vertical orientation.
+
+The aim of the game is to find a sequence of moves to move the target vehicle (emoji car) to the exit.
+
+**Assumptions**:
+1.⁠ ⁠The Hunger Hour Board Game is played on a 6x6 grid.
+2.⁠ ⁠The game board is represented as a 2D matrix.
+3.⁠ ⁠Each vehicle is represented by a non-blue coloured block and occupies 2 cells.
+4.⁠ ⁠The two smiley emoji is the vehicle to be moved to the exit (the right-most side).
+5.⁠ ⁠The target vehicle (emoji car) can only move horizontally.
+6.⁠ ⁠The other vehicles on the board can only be moved by sliding them horizontally or vertically, depending on their layout. 
+7. The cars cannot move out of the grid. 
+
+
 ### List of features implemented 
 
 * Generation of random game sets or events - each game randomly generates each map, with each round getting more difficult for players
