@@ -16,7 +16,7 @@ using namespace std::chrono;
 
 const int LEVELS = 10;
 
-int main() {
+int main() { // main function
     bool playAgain = true;
     int totalScore = 0;
     vector<Player> leaderboard;
@@ -34,7 +34,7 @@ int main() {
 
     )";
 
-    for (char c : gameOverText) {
+    for (char c : gameOverText) { // Display game description
         cout << c;
         cout.flush();
         this_thread::sleep_for(chrono::milliseconds(2));
@@ -90,13 +90,13 @@ Let the urban odyssey begin!
         this_thread::sleep_for(chrono::milliseconds(10));
     }
 
-    cout << "\n--- Press enter to continue --- \n";
+    cout << "\n--- Press enter to continue --- \n"; // Prompt user to press enter to continue
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    while (playAgain) {
+    while (playAgain) { // Loop to play the game again
         // string name;
         
-        for (int level = 1; level <= LEVELS; ++level) {
+        for (int level = 1; level <= LEVELS; ++level) { // Loop through levels
         srand(time(NULL));
         string square[BOARD_SIZE][BOARD_SIZE];
         make_map(square);
@@ -110,7 +110,7 @@ Let the urban odyssey begin!
         auto start = high_resolution_clock::now(); // 게임 시작 시간을 기록
         int moves = 0;
         
-        while (true) {
+        while (true) { // Loop to play the game
             string command;
             cout << "Input examples: j r 4 (indicating 'James right 4 boxes') or 'q' to quit)" << endl;
             cout << "Enter move command: ";
@@ -121,7 +121,7 @@ Let the urban odyssey begin!
                 continue;
             }
 
-            istringstream iss(command);
+            istringstream iss(command); // Parse the input
             iss >> color >> direction >> distance;
         
             if (color == "q") {
@@ -129,7 +129,7 @@ Let the urban odyssey begin!
                 break;
             }
             
-            if (color == "j" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) {
+            if (color == "j" && (direction == "r" || direction == "l"|| direction == "u" || direction == "d") && distance >= 1 && distance < 5) { // Check if the input is valid
                 if (move_blocks(square, "😀", vehicle, direction, distance)) {
                     cout << endl;
                     clear_screen();
@@ -214,14 +214,14 @@ Let the urban odyssey begin!
             moves++;
 
             if (square[2][4] == "😀" && square[2][5] == "😀") {
-                auto end = high_resolution_clock::now(); // 게임 종료 시간을 기록
+                auto end = high_resolution_clock::now(); // hold the end time of the game
                 auto duration = duration_cast<seconds>(end - start);
                 cout << endl << "YOU WIN!!\n" << endl;
-                cout << "Time taken: " << duration.count() << " seconds." << endl; // 경과 시간 출력
+                cout << "Time taken: " << duration.count() << " seconds." << endl; // Display the time taken to complete the game
                 cout << "level: " << level << endl;
             double duration_count = duration.count();
             double score = calculateScore(duration_count, moves);
-    cout << "Score: " << round(score) << endl;
+    cout << "Score: " << round(score) << endl; // Display the score
             totalScore += score;
             char placeholder;
             cout << "\n--- Press enter to continue ---\n";
@@ -234,7 +234,7 @@ Let the urban odyssey begin!
     
 }
 
-        string playerName;
+        string playerName; // Get player name
         cout << "Enter your name: ";
         getline(cin, playerName);
     
@@ -258,11 +258,10 @@ Let the urban odyssey begin!
         currentPlayer.totalScore = totalScore;
         leaderboard.push_back(currentPlayer);
         }
-    // }
 
     string answer;
     
-    while (true) {
+    while (true) { // Loop to prompt user to play again or quit 
     cout << "Options: \n1. Play Again\n2. Show Leaderboards\n3. Quit\nEnter option (number only): ";
     cin >> answer;
         if (answer == "1") {
@@ -270,7 +269,7 @@ Let the urban odyssey begin!
             totalScore = 0;
             break; 
         } 
-        else if (answer == "2") {
+        else if (answer == "2") { 
             // Display leaderboard
             cout << "\nLeaderboard:" << endl;
             // Sort leaderboard by total score
@@ -283,7 +282,7 @@ Let the urban odyssey begin!
             cout << endl;
             continue;
         } 
-        else if (answer == "3") {
+        else if (answer == "3") { // Quit the game
             cout << "\nThanks for playing!" << endl;
             // Display leaderboard
             cout << "Leaderboard:" << endl;
