@@ -52,13 +52,13 @@ Earn more points by winning each round quicker! Points depend on how quick you s
 
 Type these line by line:
 
-make Car.o
-make GameLogic.o
-make GameUtilities.o
-make Leaderboard.o
-make Main.o
-make main
-./main
+1) make Car.o
+2) make GameLogic.o
+3) make GameUtilities.o
+4) make Leaderboard.o
+5) make Main.o
+6) make main
+7) ./main
 
 -----
 
