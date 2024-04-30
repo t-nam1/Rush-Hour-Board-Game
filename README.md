@@ -28,7 +28,7 @@ Earn more points by winning each round quicker! Points depend on how quick you s
 
 * Generation of random game sets or events - each game randomly generates each map, with each round getting more difficult for players
 * Data structures for storing game status (e.g., arrays, STL containers) - inserts user name to store in leaderboard
-* Dynamic memory management (e.g., dynamic arrays, linked lists, STL containers)
+* Dynamic memory management (e.g., dynamic arrays)
 * File input/output (e.g., for loading/saving game status) - inserts user name to store in leaderboard
 * Program codes in multiple files (recall separate compilation)
 * Proper indentation and naming styles
