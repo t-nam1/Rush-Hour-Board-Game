@@ -43,7 +43,7 @@
 
 -----
 
-** About the game: **
+##_About the game:_
 
 ## RUSH HOUR ADVENTURE
 
