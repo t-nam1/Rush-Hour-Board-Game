@@ -1,11 +1,12 @@
 ## COMP2113_ENGG1340 Programming technologies and Computer programming II
 
 ### Team Details: 
-Team Name: 
-Team Number (on Moodle): 
+**Team Name**: 
+**Team Number** (on Moodle): 
 
-Members:
-* asdf asdf 
+**Members**:
+* Jose Joaquin Marquez (3036263622)
+* Taeuk Nam (3035709332)
 
 
 
