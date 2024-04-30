@@ -51,8 +51,7 @@ Earn more points by winning each round quicker! Points depend on how quick you s
 ### Compilation and execution instructions 
 
 Download the entire github folder.
-Type these line by line into the terminal:
-
+From the download location, type these line by line into the terminal:
 1) make Car.o
 2) make GameLogic.o
 3) make GameUtilities.o
