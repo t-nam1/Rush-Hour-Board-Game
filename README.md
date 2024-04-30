@@ -10,6 +10,39 @@
 * Julia Handiprima (3036262094)
 * Lua Xuan Zi (3036181680)
 
+### Game Description and Rules: 
+
+[ text goes here ] 
+
+### List of features implemented 
+
+* Generation of random game sets or events
+* Data structures for storing game status (e.g., arrays, STL containers)
+* Dynamic memory management (e.g., dynamic arrays, linked lists, STL containers)
+* File input/output (e.g., for loading/saving game status)
+* Program codes in multiple files (recall separate compilation)
+* Proper indentation and naming styles o In-code documentation
+
+### List of non-standard C/C++ libraries
+* <string> - for string manipulation
+* <sstream> - for stream operations
+* <vector> - for dynamic arrays
+* <tuple> - for the tuple class
+* <cstdlib> - dynamic memory management and random number generation
+* <ctime> - for time calculation
+* <cassert> - diagnostic testing
+* <chrono>  - stopwatch feature
+* <cmath> - for time calculations
+* <algorithm> - for sorting and searching
+* <limits> - query properties of fundamental data types
+* <thread> - for the thread class
+
+### Compilation and execution instructions 
+
+
+
+-----
+**About the game: **
 
 ## RUSH HOUR ADVENTURE
 
