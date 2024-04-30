@@ -50,7 +50,15 @@ Earn more points by winning each round quicker! Points depend on how quick you s
 
 ### Compilation and execution instructions 
 
-[text] 
+Type these line by line:
+
+make Car.o
+make GameLogic.o
+make GameUtilities.o
+make Leaderboard.o
+make Main.o
+make main
+./main
 
 -----
 
