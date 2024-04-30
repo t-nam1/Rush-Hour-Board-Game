@@ -45,7 +45,7 @@
 
 _About the game:_
 
-## RUSH HOUR ADVENTURE
+## HUNGRY HOUR
 
 In the heart of the bustling city, James, a university student embarks on a journey to fulfill his hunger, only to find himself facing a whirlwind day filled with errands and escapades, as he gets entangled in a web of obstacles that put his patience and strategic prowess to the test. From escaping his jam-packed apartment parking lot to navigating a gas station gridlock, battling through campus chaos, while racing against his growling stomach, James' journey is a thrilling and hunger-filled urban odyssey. With your help, he will conquer each challenge, clear the path to success, and ultimately satisfy his hunger. Join James in his quest to triumph over the city's chaos, and together, let's embark on a thrilling rush hour adventure on the search for food, filled with laughter, excitement, and delicious discoveries. Get ready to drive, strategize, and savor every moment!
 
