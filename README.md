@@ -6,7 +6,7 @@
 **Members**:
 * Jose Joaquin Marquez (3036263622)
 * Taeuk Nam (3035709332)
-* Ishmam Kazi Hamid (3036184010)
+* Kazi Ishmam Hamid (3036184010)
 * Julia Handiprima (3036262094)
 * Lua Xuan Zi (3036181680)
 
