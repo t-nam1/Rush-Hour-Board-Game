@@ -22,7 +22,7 @@ Examples of commands:
 * 'r d 1': move **Red car**, **1** blocks **down**.
 * 'w l 3': move **White car**, **3** blocks **left**.
 
-Earn more points by winning each round quicker! Remember, you can exit the game at any moment by pressing 'q'. Plan your moves carefully and lead James to victory in this engaging puzzle challenge!
+Earn more points by winning each round quicker! Points depend on how quick you solve the round and how many moves you use, the max being 1000 points. You can exit the game at any moment by pressing 'q'. Plan your moves carefully and lead James to victory in this engaging puzzle challenge!
 
 ### List of features implemented 
 
